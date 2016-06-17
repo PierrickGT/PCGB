@@ -1,0 +1,44 @@
+{
+  "name": "pcgb",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "concurrently -r \"live-server public\" \"gulp watch\"",
+    "build": "gulp build",
+    "deploy": "gulp deploy"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pierrickgt/pcgb.git"
+  },
+  "author": "Pierrick Turelier",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pierrickgt/pcgb/issues"
+  },
+  "homepage": "https://github.com/pierrickgt/pcgb#readme",
+  "devDependencies": {
+    "autoprefixer": "^6.3.6",
+    "concurrently": "^2.1.0",
+    "cssnano": "^3.7.0",
+    "cssnext": "^1.8.4",
+    "del": "^2.2.0",
+    "gulp": "^3.9.1",
+    "gulp-cache": "^0.4.5",
+    "gulp-concat": "^2.6.0",
+    "gulp-gh-pages": "^0.5.4",
+    "gulp-html-tag-include": "^1.0.1",
+    "gulp-imagemin": "^3.0.1",
+    "gulp-load-plugins": "^1.2.4",
+    "gulp-postcss": "^6.1.1",
+    "gulp-replace": "^0.5.4",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-uglify": "^1.5.3",
+    "gulp-util": "^3.0.7",
+    "live-server": "^1.0.0",
+    "postcss-assets": "^4.1.0",
+    "precss": "^1.4.0",
+    "run-sequence": "^1.2.1"
+  }
+}
