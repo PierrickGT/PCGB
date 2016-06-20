@@ -20,6 +20,9 @@ var runSequence = require('run-sequence');
 // Plugin to deploy on Github Pages
 var ghPages = require('gulp-gh-pages');
 
+// Plugin to create a static server
+var browserSync = require('browser-sync').create();
+
 gulp.task('default', ['watch']);
 
 gulp.task('modules-css', function(){
@@ -45,7 +48,8 @@ gulp.task('css', function() {
   .pipe($.sourcemaps.init())
   .pipe($.postcss(processors))
   .pipe($.sourcemaps.write('.'))
-  .pipe(gulp.dest('./public/assets/stylesheets'));
+  .pipe(gulp.dest('./public/assets/stylesheets'))
+  .pipe(browserSync.stream());
 });
 
 gulp.task('css:deploy', function() {
@@ -67,7 +71,17 @@ gulp.task('js', function() {
   .pipe($.concat('bundle.min.js'))
   .pipe($.uglify())
   .pipe($.sourcemaps.write('.'))
-  .pipe(gulp.dest('./public/assets/js'));
+  .pipe(gulp.dest('./public/assets/js'))
+  .pipe(browserSync.stream());
+});
+
+gulp.task('js:deploy', function() {
+  return gulp.src('source/js/**/*.js')
+  .pipe($.sourcemaps.init())
+  .pipe($.concat('bundle.min.js'))
+  .pipe($.uglify())
+  .pipe($.sourcemaps.write('.'))
+  .pipe(gulp.dest('./public/assets/js'))
 });
 
 gulp.task('fonts', function(){
@@ -92,6 +106,7 @@ gulp.task('html', function(){
   return gulp.src('./source/*.html')
   .pipe(include())
   .pipe(gulp.dest('./public'))
+  .pipe(browserSync.stream());
 });
 
 gulp.task('html:deploy', function(){
@@ -109,6 +124,15 @@ gulp.task('watch', function() {
   gulp.watch('source/**/*.html', ['html']);
 });
 
+// Static server
+gulp.task('serve', ['watch'], function() {
+    browserSync.init({
+        server: {
+            baseDir: "./public"
+        }
+    });
+});
+
 gulp.task('clean:public', function() {
   return del.sync('./public');
 });
@@ -118,7 +142,7 @@ gulp.task('build', function(callback) {
 });
 
 gulp.task('build:deploy', function(callback) {
-  runSequence('clean:public', 'modules', 'images', 'favicon', 'fonts', 'js', 'css:deploy', 'html:deploy', callback);
+  runSequence('clean:public', 'modules', 'images', 'favicon', 'fonts', 'js:deploy', 'css:deploy', 'html:deploy', callback);
 });
 
 gulp.task('deploy', ['build:deploy'], function() {

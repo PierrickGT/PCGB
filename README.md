@@ -134,3 +134,8 @@ https://github.com/sindresorhus/gulp-imagemin
 
 #### Cache
 https://github.com/jgable/gulp-cache
+
+### Static server
+
+#### Browsersync
+https://www.browsersync.io/docs/gulp/

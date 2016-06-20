@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "concurrently -r \"live-server public\" \"gulp watch\"",
+    "start": "gulp serve",
     "build": "gulp build",
     "deploy": "gulp deploy"
   },
@@ -20,6 +20,7 @@
   "homepage": "https://github.com/pierrickgt/pcgb#readme",
   "devDependencies": {
     "autoprefixer": "^6.3.6",
+    "browser-sync": "^2.13.0",
     "concurrently": "^2.1.0",
     "cssnano": "^3.7.0",
     "cssnext": "^1.8.4",
@@ -36,7 +37,6 @@
     "gulp-sourcemaps": "^1.6.0",
     "gulp-uglify": "^1.5.3",
     "gulp-util": "^3.0.7",
-    "live-server": "^1.0.0",
     "postcss-assets": "^4.1.0",
     "precss": "^1.4.0",
     "run-sequence": "^1.2.1"
