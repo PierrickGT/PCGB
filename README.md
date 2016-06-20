@@ -1,4 +1,4 @@
-# PCGB
+![PCGB Logo](https://cloud.githubusercontent.com/assets/2401738/16187424/8d73da1c-36d0-11e6-90ad-90a30bd35150.png)
 
 PCGB: a simple PostCSS boilerplate to kickstart your static website project
 
