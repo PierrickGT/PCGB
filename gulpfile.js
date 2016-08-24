@@ -1,15 +1,17 @@
-var gulp = require('gulp'),
-$ = require('gulp-load-plugins')();
+var gulp = require('gulp');
+var $ = require('gulp-load-plugins')();
 
 // Plugin to include HTML files
 var include = require('gulp-html-tag-include');
 
 // PostCSS Plugins
-var autoprefixer = require('autoprefixer'),
-cssnext = require('cssnext'),
-precss = require('precss'),
-assets  = require('postcss-assets'),
-cssnano = require('cssnano');
+var autoprefixer = require('autoprefixer');
+var cssnext = require('postcss-cssnext');
+var precss = require('precss');
+var assets  = require('postcss-assets');
+var cssnano = require('cssnano');
+var browserReporter = require("postcss-browser-reporter");
+var reporter = require("postcss-reporter");
 
 // Plugin to clean public folder
 var del = require('del');
@@ -39,11 +41,12 @@ gulp.task('modules', function(callback) {
   runSequence('modules-js', 'modules-css', callback);
 });
 
+// CSS tasks
 gulp.task('css', function() {
-  var processors = [autoprefixer, cssnext, precss, assets({
+  var processors = [precss, cssnext, assets({
     basePath: 'public/',
     loadPaths: ['assets/images/**']
-  }), cssnano({zindex: false})];
+  }), browserReporter, reporter, cssnano({autoprefixer: false, zindex: false})];
   return gulp.src('./source/css/style.css')
   .pipe($.sourcemaps.init())
   .pipe($.postcss(processors))
@@ -53,18 +56,20 @@ gulp.task('css', function() {
 });
 
 gulp.task('css:deploy', function() {
-  var processors = [autoprefixer, cssnext, precss, assets({
+  var processors = [precss, cssnext, assets({
     basePath: 'public/',
     baseUrl: '', // Write your Github URL here
     loadPaths: ['assets/images/**']
-  }), cssnano({zindex: false})];
+  }), browserReporter, reporter, cssnano({autoprefixer: false, zindex: false})];
   return gulp.src('./source/css/style.css')
   .pipe($.sourcemaps.init())
   .pipe($.postcss(processors))
   .pipe($.sourcemaps.write('.'))
-  .pipe(gulp.dest('./public/assets/stylesheets'));
+  .pipe(gulp.dest('./public/assets/stylesheets'))
+  .pipe(browserSync.stream());
 });
 
+// JS tasks
 gulp.task('js', function() {
   return gulp.src('source/js/**/*.js')
   .pipe($.sourcemaps.init())
@@ -84,11 +89,13 @@ gulp.task('js:deploy', function() {
   .pipe(gulp.dest('./public/assets/js'))
 });
 
+// Fonts task
 gulp.task('fonts', function(){
   return gulp.src(['source/fonts/**/*.+(eot|svg|ttf|woff|woff2)'])
   .pipe(gulp.dest('./public/assets/fonts'))
 });
 
+// Images task
 gulp.task('images', function(){
   return gulp.src('source/images/**/*.+(png|jpg|gif|svg)')
   .pipe($.cache($.imagemin({
@@ -97,11 +104,13 @@ gulp.task('images', function(){
   .pipe(gulp.dest('./public/assets/images'))
 });
 
+// Favicon task
 gulp.task('favicon', function(){
   return gulp.src('source/favicon/**')
   .pipe(gulp.dest('./public/assets/favicon'))
 });
 
+// HTML tasks
 gulp.task('html', function(){
   return gulp.src('./source/*.html')
   .pipe(include())
@@ -116,6 +125,7 @@ gulp.task('html:deploy', function(){
   .pipe(gulp.dest('./public'))
 });
 
+// Watch task
 gulp.task('watch', function() {
   gulp.watch('source/css/**/*.css', ['css']);
   gulp.watch('source/js/**/*.js', ['js']);
@@ -133,10 +143,12 @@ gulp.task('serve', ['watch'], function() {
     });
 });
 
+// Clean task
 gulp.task('clean:public', function() {
   return del.sync('./public');
 });
 
+// Build tasks
 gulp.task('build', function(callback) {
   runSequence('clean:public', 'modules', 'images', 'favicon', 'fonts', 'js', 'css', 'html', callback);
 });
@@ -145,6 +157,7 @@ gulp.task('build:deploy', function(callback) {
   runSequence('clean:public', 'modules', 'images', 'favicon', 'fonts', 'js:deploy', 'css:deploy', 'html:deploy', callback);
 });
 
+// Deploy task
 gulp.task('deploy', ['build:deploy'], function() {
   return gulp.src('./public/**/*')
   .pipe(ghPages());
