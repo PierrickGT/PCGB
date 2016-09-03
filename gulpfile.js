@@ -12,6 +12,12 @@ var cssnano = require('cssnano')({autoprefixer: false, zindex: false});
 var browserReporter = require('postcss-browser-reporter');
 var reporter = require('postcss-reporter');
 
+// JS Plugins
+var browserify = require('browserify');
+var babelify = require('babelify');
+var buffer = require('vinyl-buffer');
+var source = require('vinyl-source-stream');
+
 // Plugin to clean public folder
 var del = require('del');
 
@@ -26,11 +32,13 @@ var browserSync = require('browser-sync').create();
 
 gulp.task('default', ['watch']);
 
+// Load your CSS node_modules here
 gulp.task('modules-css', function(){
   return gulp.src([])
   .pipe(gulp.dest('./public/assets/stylesheets'));
 });
 
+// Load your JS node_modules here
 gulp.task('modules-js', function(){
   return gulp.src([])
   .pipe(gulp.dest("./public/assets/js"));
@@ -69,9 +77,19 @@ gulp.task('css:deploy', function() {
 
 // JS tasks
 gulp.task('js', function() {
-  return gulp.src('source/js/**/*.js')
-  .pipe($.sourcemaps.init())
-  .pipe($.concat('bundle.min.js'))
+  var bundler = browserify({
+    entries: 'source/js/app.js',
+    debug: true
+  });
+  bundler
+  .transform(babelify, {presets: ['es2015']})
+  .bundle()
+  .on('error', function(err) {
+    console.error(err);
+  })
+  .pipe(source('app.js'))
+  .pipe(buffer())
+  .pipe($.sourcemaps.init({loadMaps: true}))
   .pipe($.uglify())
   .pipe($.sourcemaps.write('.'))
   .pipe(gulp.dest('./public/assets/js'))
@@ -79,12 +97,22 @@ gulp.task('js', function() {
 });
 
 gulp.task('js:deploy', function() {
-  return gulp.src('source/js/**/*.js')
-  .pipe($.sourcemaps.init())
-  .pipe($.concat('bundle.min.js'))
+  var bundler = browserify({
+    entries: 'source/js/app.js',
+    debug: true
+  });
+  bundler
+  .transform(babelify, {presets: ['es2015']})
+  .bundle()
+  .on('error', function(err) {
+    console.error(err);
+  })
+  .pipe(source('app.js'))
+  .pipe(buffer())
+  .pipe($.sourcemaps.init({loadMaps: true}))
   .pipe($.uglify())
   .pipe($.sourcemaps.write('.'))
-  .pipe(gulp.dest('./public/assets/js'))
+  .pipe(gulp.dest('./public/assets/js'));
 });
 
 // Fonts task
@@ -134,11 +162,11 @@ gulp.task('watch', function() {
 
 // Static server
 gulp.task('serve', ['watch'], function() {
-    browserSync.init({
-        server: {
-            baseDir: "./public"
-        }
-    });
+  browserSync.init({
+    server: {
+      baseDir: "./public"
+    }
+  });
 });
 
 // Clean task
