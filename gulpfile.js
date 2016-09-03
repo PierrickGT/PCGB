@@ -5,13 +5,12 @@ var $ = require('gulp-load-plugins')();
 var include = require('gulp-html-tag-include');
 
 // PostCSS Plugins
-var autoprefixer = require('autoprefixer');
 var cssnext = require('postcss-cssnext');
 var precss = require('precss');
 var assets  = require('postcss-assets');
-var cssnano = require('cssnano');
-var browserReporter = require("postcss-browser-reporter");
-var reporter = require("postcss-reporter");
+var cssnano = require('cssnano')({autoprefixer: false, zindex: false});
+var browserReporter = require('postcss-browser-reporter');
+var reporter = require('postcss-reporter');
 
 // Plugin to clean public folder
 var del = require('del');
@@ -46,7 +45,7 @@ gulp.task('css', function() {
   var processors = [precss, cssnext, assets({
     basePath: 'public/',
     loadPaths: ['assets/images/**']
-  }), browserReporter, reporter, cssnano({autoprefixer: false, zindex: false})];
+  }), cssnano, browserReporter, reporter];
   return gulp.src('./source/css/style.css')
   .pipe($.sourcemaps.init())
   .pipe($.postcss(processors))
@@ -60,13 +59,12 @@ gulp.task('css:deploy', function() {
     basePath: 'public/',
     baseUrl: '', // Write your Github URL here
     loadPaths: ['assets/images/**']
-  }), browserReporter, reporter, cssnano({autoprefixer: false, zindex: false})];
+  }), cssnano, browserReporter, reporter];
   return gulp.src('./source/css/style.css')
   .pipe($.sourcemaps.init())
   .pipe($.postcss(processors))
   .pipe($.sourcemaps.write('.'))
-  .pipe(gulp.dest('./public/assets/stylesheets'))
-  .pipe(browserSync.stream());
+  .pipe(gulp.dest('./public/assets/stylesheets'));
 });
 
 // JS tasks
